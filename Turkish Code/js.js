@@ -4,6 +4,32 @@ const circles = document.querySelectorAll('button.circle');
 const textarea = document.querySelector('textarea');
 const check = document.querySelector('button.button');
 
+
+//keyboard commands
+textarea.addEventListener('keyup', function() {
+    textarea.value = textarea.value.replace(/c=/, 'ç');
+    textarea.value = textarea.value.replace(/C=/, 'Ç');
+
+    textarea.value = textarea.value.replace(/g=/, 'ğ');
+    textarea.value = textarea.value.replace(/G=/, 'Ğ');
+
+    textarea.value = textarea.value.replace(/s=/, 'ş');
+    textarea.value = textarea.value.replace(/S=/, 'Ş');
+
+    textarea.value = textarea.value.replace(/o=/, 'ö');
+    textarea.value = textarea.value.replace(/O=/, 'Ö');
+
+    textarea.value = textarea.value.replace(/u=/, 'ü');
+    textarea.value = textarea.value.replace(/U=/, 'Ü');
+
+    textarea.value = textarea.value.replace(/i=/, 'ı');
+    textarea.value = textarea.value.replace(/I=/, 'I');
+
+    textarea.value = textarea.value.replace(/ı=/, 'i');
+    textarea.value = textarea.value.replace(/I=/, 'İ');
+
+});
+
 //turning off spell check
 textarea.spellcheck = false;
 
@@ -26,9 +52,8 @@ circles.forEach(circle => circle.addEventListener('click', (event) => {
   };
 
 
-
 //AUDIO PLAYER JS
-turkish = ['Grigo, "Gerçekten bilmiyorum," diyor', 'Ardından, emlak vergisi adını aldı', 'Şimdi ise elli altı sandalyesi olacak', 
+turkish = ['Grigo Gerçekten bilmiyorum diyor', 'Ardından emlak vergisi adını aldı', 'Şimdi ise elli altı sandalyesi olacak', 
 'Ne tür değişiklikler yapılması planlanıyor', 'Katılım oranı da diğer bir değişken', 'Konuktan sonraki öncelik, eğitim', 'Lükse yer kalmıyor',
 'Patlamanın on kilometre uzaktan işitildiği bildirildi', 'Turnuvaya on üç ülkeden doksan sporcu katıldı', 
 'Arnavutluk terörle mücadele çabalarını arttırıyor', 'Fiyatın altmış altı Euro olduğu bildirildi', 'Projenin sonuçları Nisan ayında yayınlandı',
@@ -42,9 +67,7 @@ english = ['Grigo is saying, "I really don\'t know"', 'Afterwards, it got named 
 'What do you think that makes you a legend', 'A tenth of the money will be given as a grant'];
 
 var currentSong = 0;
-
-
-
+let answer;
 
 function audioPlayer(){
     
@@ -62,48 +85,73 @@ function audioPlayer(){
         answer = turkish[currentSong];
         console.log(answer);
 
-
     });
 };
 
-
-// function checkAnswer() {
-    
-//     userAnswer = textarea.value;
-//     if(userAnswer === answer){
-//         console.log('correct');
-//     }else{
-//         console.log('so close the right answer is ' + answer);
-
-//     }
-    
-// }
-
-
+//checking answer (with button)
 check.onclick = function() {
 
-  let results = document.querySelector('.showAnswer');
-  results.innerHTML ='';
+    let realAnswer = answer;
+    let results = document.querySelector('.showAnswer');
+    results.innerHTML ='';
 
-  console.log(textarea.value);
-  userAnswer = textarea.value;
+    console.log(textarea.value);
+    userAnswer = textarea.value;
 
-  htmlRight =`
-  <h2>That's right.</h2>`;
+    ////comparing the answer to the user input 
 
-  htmlWrong =` 
-  <h2> Nice try. the correct answer is ${answer}`;
+        var dmp = new diff_match_patch();
+        var d = dmp.diff_main(userAnswer, realAnswer);
 
-  if(userAnswer === answer){
-      console.log('correct');
-      results.insertAdjacentHTML('beforeend', htmlRight);
+        dmp.diff_cleanupSemantic(d);
+        dmp.diff_cleanupEfficiency(d);
+        var ds = dmp.diff_prettyHtml(d);
 
-  }else{
-      console.log('so close the right answer is ' + answer);
-      results.insertAdjacentHTML('beforeend', htmlWrong);
 
-  }
-  
+    if(userAnswer === answer){
+        console.log('correct');
+        results.innerHTML = `<p>That's right! Awesome job.</p>`;
 
+    }else{
+        console.log('so close the right answer is ' + answer);
+        //results.insertAdjacentHTML('beforeend', htmlWrong);
+        results.innerHTML = `<p>Nice Try. The correct answer is <span> ${answer}.</span></p> 
+        <p>How you can improve: ${ds}</p>`;
+        
+    }
 };
+
+//check button key shortcut 
+textarea.addEventListener('keyup', function(key) {
+    if(key.keyCode == 13){
+        key.preventDefault(); 
+        //console.log('enter');
+        let results = document.querySelector('.showAnswer');
+        results.innerHTML ='';
+
+        console.log(textarea.value);
+        userAnswer = textarea.value;
+        let realAnswer = answer;
+
+     ////comparing the answer to the user input 
+
+        var dmp = new diff_match_patch();
+        var d = dmp.diff_main(userAnswer, realAnswer);
+
+        dmp.diff_cleanupSemantic(d);
+        dmp.diff_cleanupEfficiency(d);
+        var ds = dmp.diff_prettyHtml(d);
+        
+        if(userAnswer === answer){
+            console.log('correct');
+            results.innerHTML = `<p>That's right! Awesome job.</p>`;
+    
+        }else{
+            console.log('so close the right answer is ' + answer);
+            results.innerHTML = `<p>Nice Try. The correct answer is <span> ${answer}.</span></p> 
+            <p>How you can improve: ${ds}</p>`;
+            
+        }
+     }
+});
 
