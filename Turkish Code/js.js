@@ -3,6 +3,9 @@ console.log("connected");
 const circles = document.querySelectorAll('button.circle');
 const textarea = document.querySelector('textarea');
 const check = document.querySelector('button.button');
+const alphabetBox = document.querySelectorAll('box.box1');
+
+console.log(alphabetBox);
 
 
 //keyboard commands
@@ -154,4 +157,3 @@ textarea.addEventListener('keyup', function(key) {
         }
      }
 });
-
